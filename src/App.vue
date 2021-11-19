@@ -1,17 +1,36 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <ul>
+      <li v-for="file in files" :key="file">
+        {{file}}
+      </li>
+    </ul>
+    <button @click="newWin">New win</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+const { readdir } = require("fs/promises");
+import { ipcRenderer } from "electron";
 
 export default {
   name: "App",
-  components: {
-    HelloWorld,
+  data() {
+    return {
+      files: [],
+      dir: ".",
+    };
+  },
+  mounted() {
+    this.scan(this.dir)
+  },
+  methods: {
+    newWin() {
+      ipcRenderer.send('new-win')
+    },
+    scan(dir) {
+      readdir(dir).then((files) => (this.files = files));
+    },
   },
 };
 </script>
